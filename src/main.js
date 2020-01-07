@@ -2,6 +2,7 @@ import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
 import store from './store'
+import 'amfe-flexible'
 import './utils/register-vant'
 
 // 自己设置的样式文件要放在第三方的后面，css具有层叠性和优先级，如果放在前面就会影响第三方
