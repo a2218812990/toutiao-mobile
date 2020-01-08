@@ -6,33 +6,41 @@
 />
  <!-- 导航栏 -->
  <!-- 表单 -->
-  <van-cell-group>
+<ValidationObserver ref="form">
+
+<ValidationProvider name="手机号" rules="required">
   <van-field
     label="手机号"
     placeholder="请输入手机号"
     v-model="login.mobile"
-  > <i class="iconfont icon-shouji" slot="left-icon"></i> </van-field>
+   >
+   <i class="iconfont icon-shouji" slot="left-icon"></i>
+  </van-field>
+</ValidationProvider>
 
-  <van-field
-label="验证码"
-placeholder="请输入验证码"
-v-model="login.code"
+<ValidationProvider name="验证码" rules="required">
+<van-field
+   label="验证码"
+   placeholder="请输入验证码"
+   v-model="login.code"
   >
   <i class="iconfont icon-iconfontmima1" slot="left-icon"></i>
   <!-- 倒计时 -->
   <van-count-down
-  v-if="timeShow"
-  slot="button"
-  :time="60*1000"
-  format="sss"
-  @finish="timeShow=false"
-/>
+    v-if="timeShow"
+    slot="button"
+    :time="60*1000"
+    format="sss"
+    @finish="timeShow=false"
+   />
  <!-- 倒计时 -->
    <van-button v-else @click="sendCode"
     slot="button" size="small" type="primary">
     发送验证码</van-button>
-  </van-field>
-</van-cell-group>
+</van-field>
+</ValidationProvider>
+
+</ValidationObserver>
   <!-- 表单 -->
   <!-- 按钮 -->
   <div class="btn">
