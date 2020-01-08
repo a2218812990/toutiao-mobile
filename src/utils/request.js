@@ -1,5 +1,6 @@
 import axios from 'axios'
 import jsonBigInt from 'json-bigint'
+
 // 设置基础地址配置
 const request = axios.create({
   baseURL: 'http://ttapi.research.itcast.cn/'
