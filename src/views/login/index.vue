@@ -11,12 +11,27 @@
     label="手机号"
     placeholder="请输入手机号"
     v-model="login.mobile"
-  />
+  > <i class="iconfont icon-shouji" slot="left-icon"></i> </van-field>
+
   <van-field
-    label="验证码"
-    placeholder="请输入验证码"
-    v-model="login.code"
-  />
+label="验证码"
+placeholder="请输入验证码"
+v-model="login.code"
+  >
+  <i class="iconfont icon-iconfontmima1" slot="left-icon"></i>
+  <!-- 倒计时 -->
+  <van-count-down
+  v-if="timeShow"
+  slot="button"
+  :time="60*1000"
+  format="sss"
+  @finish="timeShow=false"
+/>
+ <!-- 倒计时 -->
+   <van-button v-else @click="sendCode"
+    slot="button" size="small" type="primary">
+    发送验证码</van-button>
+  </van-field>
 </van-cell-group>
   <!-- 表单 -->
   <!-- 按钮 -->
@@ -28,7 +43,7 @@
 </template>
 
 <script>
-import { login } from '@/api/user.js'
+import { login, phoneCode } from '@/api/user.js'
 export default {
   name: 'loginpage',
   data () {
@@ -36,7 +51,8 @@ export default {
       login: {
         mobile: '', // 手机号
         code: '' // 验证码
-      }
+      },
+      timeShow: false
     }
   },
   methods: {
@@ -56,6 +72,17 @@ export default {
       } catch (err) {
         console.log('登录失败', err)
         this.$toast.fail('登录失败')
+      }
+    },
+    // 发送验证码
+    async sendCode () {
+      let{ mobile } = this.login
+      try {
+        this.timeShow = true
+        let res = await phoneCode(mobile)
+        console.log(res.message)
+      } catch (error) {
+        console.log(error)
       }
     }
   },
