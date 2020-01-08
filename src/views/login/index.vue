@@ -79,10 +79,14 @@ export default {
       let{ mobile } = this.login
       try {
         this.timeShow = true
-        let res = await phoneCode(mobile)
-        console.log(res.message)
-      } catch (error) {
-        console.log(error)
+        await phoneCode(mobile)
+      } catch (err) {
+        this.timeShow = false
+        if (err.response.status === 429) {
+          this.$toast('请勿频繁发送验证码')
+          return
+        }
+        this.$toast('发送失败')
       }
     }
   },
