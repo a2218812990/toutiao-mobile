@@ -92,7 +92,10 @@ export default {
       // 登录接口调用
       try {
         let res = await login(this.login)
-        console.log(res)
+        // 登录的时候获取token值,传到store中
+
+        this.$store.commit('setToken', res.data.data)
+
         this.$toast.success('登录成功')
       } catch (err) {
         console.log('登录失败', err)
