@@ -141,5 +141,15 @@ export default {
             background-color: #6db4fb;
         }
     }
+    .van-button--small{
+        width:76px;
+        height: 21px;
+        font-size: 11px;
+        line-height: 21px;
+        border-radius: 12px;
+        background-color: #ededed;
+        color:#666666;
+        border: none
+    }
 }
 </style>
