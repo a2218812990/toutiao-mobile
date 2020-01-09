@@ -16,6 +16,7 @@
    >
    <i class="iconfont icon-shouji" slot="left-icon"></i>
   </van-field>
+  <!-- <span>{{errors[0]}}</span> -->
 </ValidationProvider>
 
 <ValidationProvider name="验证码" rules="required">
@@ -66,6 +67,12 @@ export default {
   methods: {
     // 登录验证
     async  clicklogin () {
+      // 表单验证
+      let success = await this.$refs.form.validate()
+      if (!success) {
+        console.log('验证失败')
+        return // 终止后续执行
+      }
       // 表单验证成功后转圈圈
       this.$toast.loading({
         duration: 0,
