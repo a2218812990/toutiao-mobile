@@ -21,3 +21,21 @@ Object.keys(rules).forEach(rule => {
     message: messages[rule]
   })
 })
+
+// 添加自定义验证规则  自带的几种简单验证规则不符合我们的要求，因此自定义
+// extend
+
+// 最简单的用法
+// extend('positive', value => {
+//   return value >= 0;
+// });
+// 手机号验证规则
+extend('mobile', {
+  validate: value => /^1(3|5|6|7|8|9)\d{9}$/.test(value),
+  message: '{_field_}格式不对'
+})
+// 验证码规则
+extend('code', {
+  validate: value => /^\d{6}$/.test(value),
+  message: '{_field_}格式不对'
+})

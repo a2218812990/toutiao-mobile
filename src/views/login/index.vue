@@ -8,7 +8,7 @@
  <!-- 表单 -->
 <ValidationObserver ref="form">
 
-<ValidationProvider name="手机号" rules="required">
+<ValidationProvider name="手机号" rules="required|mobile">
   <van-field
     label="手机号"
     placeholder="请输入手机号"
@@ -19,26 +19,26 @@
   <!-- <span>{{errors[0]}}</span> -->
 </ValidationProvider>
 
-<ValidationProvider name="验证码" rules="required">
-<van-field
+<ValidationProvider name="验证码" rules="required|code">
+ <van-field
    label="验证码"
    placeholder="请输入验证码"
    v-model="login.code"
   >
-  <i class="iconfont icon-iconfontmima1" slot="left-icon"></i>
+   <i class="iconfont icon-iconfontmima1" slot="left-icon"></i>
   <!-- 倒计时 -->
-  <van-count-down
-    v-if="timeShow"
-    slot="button"
-    :time="60*1000"
-    format="sss"
-    @finish="timeShow=false"
-   />
+    <van-count-down
+      v-if="timeShow"
+      slot="button"
+      :time="60*1000"
+      format="sss"
+      @finish="timeShow=false"
+       />
  <!-- 倒计时 -->
-   <van-button v-else @click="sendCode"
-    slot="button" size="small" type="primary">
-    发送验证码</van-button>
-</van-field>
+         <van-button v-else @click="sendCode"
+          slot="button" size="small" type="primary">
+           发送验证码</van-button>
+  </van-field>
 </ValidationProvider>
 
 </ValidationObserver>
@@ -53,6 +53,7 @@
 
 <script>
 import { login, phoneCode } from '@/api/user.js'
+import { validate } from 'vee-validate'
 export default {
   name: 'loginpage',
   data () {
@@ -69,8 +70,17 @@ export default {
     async  clicklogin () {
       // 表单验证
       let success = await this.$refs.form.validate()
+
       if (!success) {
-        console.log('验证失败')
+        // 使用定时器是因为插件的原因，在获取错误数据的时候有延迟问题
+        setTimeout(() => {
+          let { errors } = this.$refs.form
+          console.log('失败', errors)
+          const item = Object.values(errors).find(item => item[0])
+          if (item[0]) {
+            return this.$toast(item[0])
+          }
+        }, 100)
         return // 终止后续执行
       }
       // 表单验证成功后转圈圈
@@ -92,6 +102,16 @@ export default {
     // 发送验证码
     async sendCode () {
       let{ mobile } = this.login
+      // 发送验证码的时候，要查看手机号是否空和格式是否正确
+      const { valid, errors } = await validate(mobile, 'required|mobile', {
+        name: '手机号'
+      })
+      if (!valid) {
+        this.$toast(errors[0])
+        return
+      }
+
+      // 调用验证码接口
       try {
         this.timeShow = true
         await phoneCode(mobile)
