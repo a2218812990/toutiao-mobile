@@ -3,7 +3,8 @@ import { Button, NavBar, Field, CellGroup, Cell,
   Toast, CountDown, Tabbar, TabbarItem, Image,
   Grid,
   GridItem,
-  Icon
+  Icon,
+  Dialog
 } from 'vant'
 Vue.use(Button) // 注册
   .use(NavBar)
@@ -18,3 +19,4 @@ Vue.use(Button) // 注册
   .use(GridItem)
   .use(Icon)
   .use(Cell)
+  .use(Dialog)
