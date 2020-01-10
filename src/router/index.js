@@ -6,7 +6,6 @@ Vue.use(VueRouter)
 const routes = [
   { path: '/login', component: () => import('@/views/login') }, // 登录页
   { path: '/',
-    name: 'tab-bar',
     component: () => import('@/views/tabbar'), // tabbar切换页面（可以当作home）
     children: [
       { path: '', component: () => import('@/views/home') }, // 默认是首页，所以地址设置为空
