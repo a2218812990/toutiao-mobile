@@ -4,7 +4,11 @@ import { Button, NavBar, Field, CellGroup, Cell,
   Grid,
   GridItem,
   Icon,
-  Dialog
+  Dialog,
+  Tab,
+  Tabs,
+  List,
+  PullRefresh
 } from 'vant'
 Vue.use(Button) // 注册
   .use(NavBar)
@@ -20,3 +24,7 @@ Vue.use(Button) // 注册
   .use(Icon)
   .use(Cell)
   .use(Dialog)
+  .use(Tab)
+  .use(Tabs)
+  .use(List)
+  .use(PullRefresh)
