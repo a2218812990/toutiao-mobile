@@ -62,11 +62,16 @@ export default {
     },
 
     // 下拉刷新
-    onRefresh () {
-      setTimeout(() => {
-        this.$toast('刷新成功')
-        this.isLoading = false
-      }, 1000)
+    async onRefresh () {
+      let params = {
+        channel_id: this.channel.id,
+        timestamp: Date.now(),
+        with_top: 1 }
+      let{ data } = await getArticleList(params)
+      let res = data.data.results
+      this.list.unshift(...res)
+      this.isLoading = false
+      this.$toast(`加载了${res.length}篇文章`)
     }
   }
 }
