@@ -22,7 +22,9 @@
              position="bottom"
              :style="{ height: '100%' }"
             >
-           <ChannelsEdit :userChannels="channels"></ChannelsEdit>
+           <ChannelsEdit v-model='active'
+            :userChannels="channels"
+             @close="popupShow=false"></ChannelsEdit>
             </van-popup>
  </div>
 </template>
@@ -31,6 +33,7 @@
 import { getChannels } from '@/api/user.js'
 import ArticleList from '../../components/article-list'
 import ChannelsEdit from '../../components/channels-edit'
+import { getItem } from '@/utils/storage'
 export default {
   name: 'HomePage',
   components: { ArticleList, ChannelsEdit },
@@ -45,10 +48,18 @@ export default {
   methods: {
     //    获取频道列表
     async getchannels () {
-      let { data } = await getChannels()
-      //   console.log(data.data.channels)
-      this.channels = data.data.channels
+      // 因为线上的接口出了问题，不能将用户改变后编辑的数据存到服务器，所以这里用到了本地存储
+      // 如果有本次存储就用本地的，没有就获取接口给推荐的频道
+      // 1先取出本地存储的频道数据
+      let localChannels = getItem('userChannels')
+      if (localChannels) {
+        this.channels = localChannels
+      } else {
+        let { data } = await getChannels()
+        //   console.log(data.data.channels)
+        this.channels = data.data.channels
       // console.log(this.channels)
+      }
     }
   },
   created () {
