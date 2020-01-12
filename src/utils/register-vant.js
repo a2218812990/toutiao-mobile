@@ -9,7 +9,8 @@ import { Button, NavBar, Field, CellGroup, Cell,
   Tabs,
   List,
   PullRefresh,
-  Popup
+  Popup,
+  Search
 } from 'vant'
 Vue.use(Button) // 注册
   .use(NavBar)
@@ -30,3 +31,4 @@ Vue.use(Button) // 注册
   .use(List)
   .use(PullRefresh)
   .use(Popup)
+  .use(Search)

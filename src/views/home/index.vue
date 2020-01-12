@@ -1,9 +1,15 @@
 <template>
  <div class="homepage">
        <van-nav-bar
-         title="首页"
          fixed
-         />
+         >
+        <van-button color="#5babfb"
+         icon="search"
+         slot="title"
+         size="large"
+         round type="info"
+         @click="$router.push('/search')">搜索</van-button>
+         </van-nav-bar>
          <!-- tab标签栏 -->
          <van-tabs v-model="active">
           <van-icon class="click-icon" slot="nav-right" name="wap-nav" @click="popupShow=true"></van-icon>
@@ -87,5 +93,15 @@ export default {
        background-color: #fff;
 
   }
+.van-button{
+      height: 33px;
+      margin-top: 20px;
+      .van-icon{
+         margin-top: -16px;
+      }
+      .van-button__text{
+         margin-top: -8px;
+      }
+}
 }
 </style>
