@@ -15,6 +15,11 @@
     :text="item.name"
     @click="editchannels(index)"
   >
+  <span
+           slot="text"
+           class="text"
+          :class="{ active: value === index }"
+        >{{ item.name }}</span>
   <van-icon v-show="closeicon&&index!==0" class="close-icon" name="clear" slot="icon"></van-icon>
   </van-grid-item>
 </van-grid>
@@ -113,6 +118,12 @@ export default {
         top:-11px;
         right: -6px;
         font-size: 16px;
+     }
+     .text{
+          font-size: 14px
+     }
+     .active{
+        color: red;
      }
 }
 </style>
