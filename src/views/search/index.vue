@@ -54,6 +54,7 @@
 <script>
 import { searchSuggestion, searchResult } from '@/api/search.js'
 import { getItem, setItem } from '@/utils/storage'
+import { debounce } from 'lodash'
 export default {
   data () {
     return {
@@ -104,13 +105,13 @@ export default {
       }
     },
     // 联想建议事件
-    async  inputChange () {
+    inputChange: debounce(async function () {
       let q = this.searchtext
       if (q) {
         let { data } = await searchSuggestion({ q })
         this.suggestionList = data.data.options
       }
-    },
+    }, 400),
     // 点击联想建议得到搜索结果
     async clickSuggest (str) {
       if (str) {
