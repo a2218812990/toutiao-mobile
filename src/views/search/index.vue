@@ -7,7 +7,7 @@
     placeholder="请输入搜索关键词"
     show-action
     @search="onSearch"
-    @cancel="$router.back()"
+    @cancel="$router.push('/')"
     @focus="resultshow=false"
     background="#3296fa"
     @input="inputChange"

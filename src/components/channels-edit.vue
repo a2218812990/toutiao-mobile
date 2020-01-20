@@ -38,7 +38,7 @@
 
 <script>
 import { getAllChannels } from '@/api/allchannels'
-import { setItem } from '@/utils/storage'
+import { setItem } from '../utils/storage'
 export default {
   props: {
     userChannels: {
