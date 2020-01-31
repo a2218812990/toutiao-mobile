@@ -38,12 +38,14 @@
         </div>
         <!-- //如果当前用户没有登录，或者当前登录的用户是作者本人，那么就不显示关注按钮 -->
         <van-button
-          v-if="!$store.state.token || article.aut_id !== $store.state.token.id"
+         v-if="!$store.state.token || article.aut_id !== $store.state.token.id"
          class="follow-btn"
-            :type="article.is_followed ? 'default' : 'info'"
-             size="small" round>
+         :type="article.is_followed ? 'default' : 'info'"
+          size="small" round
+          @click="focusUser"
+        >
              {{ article.is_followed ? '已关注' : '+ 关注' }}
-             </van-button>
+        </van-button>
       </div>
       <div class="markdown-body" v-html="article.content"></div>
     </div>
@@ -97,6 +99,7 @@
 
 <script>
 import { getArticleDetails, collectArticle, deleteCollect, addLike, deleteLike } from '@/api/article'
+import { addFocus, deleteFocus } from '@/api/user'
 export default {
   name: 'article-details',
   props: {
@@ -174,6 +177,23 @@ export default {
           this.article.attitude = 1
           this.$toast.success('点赞成功')
         }
+      } catch (err) {
+        console.log(err)
+        this.$toast.fail('操作失败')
+      }
+    },
+    // 关注和取消关注文章作者
+    async focusUser () {
+      try {
+        const authorId = this.article.aut_id
+        if (this.article.is_followed) {
+        // 如果是关注则取消
+          await deleteFocus(authorId)
+        } else {
+          await addFocus(authorId)
+        }
+        // 更新视图
+        this.article.is_followed = !this.article.is_followed
       } catch (err) {
         console.log(err)
         this.$toast.fail('操作失败')
