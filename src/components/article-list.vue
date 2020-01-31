@@ -23,6 +23,7 @@
 <script>
 import { getArticleList } from '@/api/article'
 export default {
+  name: 'articlePage',
   props: {
     channel: {
       type: Object,
@@ -42,7 +43,6 @@ export default {
     async onLoad () {
       // 异步更新数据
       // console.log(this.channel.id)
-
       let params = {
         channel_id: this.channel.id,
         timestamp: this.timestamp || Date.now(),

@@ -1,7 +1,9 @@
 <template>
 <div class="tabbar">
     <!-- 子路由出口 -->
-    <router-view/>
+   <keep-alive include="articlePage">
+     <router-view></router-view>
+</keep-alive>
      <!-- 子路由出口 -->
      <!-- 下面导航tabbar -->
      <van-tabbar route>

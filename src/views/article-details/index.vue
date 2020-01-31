@@ -14,41 +14,36 @@
       class="loading"
       color="#1989fa"
       vertical
+      v-if="loading"
     >
       <slot>加载中...</slot>
     </van-loading>
     <!-- /加载中 -->
 
     <!-- 文章详情 -->
-    <div class="detail">
-      <h3 class="title">一个合格的中级前端工程师需要掌握的 28 个 JavaScript 技巧</h3>
+    <div v-else-if="article.title" class="detail">
+      <h3 class="title">{{article.title}}</h3>
       <div class="author-wrap">
         <div class="base-info">
           <van-image
             class="avatar"
             round
             fit="cover"
-            src="https://img.yzcdn.cn/vant/cat.jpeg"
+            :src="article.aut_photo"
           />
           <div class="text">
-            <p class="name">黑马头条号</p>
-            <p class="time">4 小时前</p>
+            <p class="name">{{article.aut_name}}</p>
+            <p class="time">{{article.pubdate}}</p>
           </div>
         </div>
         <van-button class="follow-btn" type="info" size="small" round>+ 关注</van-button>
       </div>
-      <div class="markdown-body">
-        <p>作为战斗在业务一线的前端，要想少加班，就要想办法提高工作效率。这里提一个小点，我们在业务开发过程中，经常会重复用到日期格式化、url参数转对象、浏览器类型判断、节流函数等一类函数，这些工具类函数，基本上在每个项目都会用到，为避免不同项目多次复制粘贴的麻烦，我们可以统一封装，发布到npm，以提高开发效率。</p>
-        <p>使用 Object.prototype.toString 配合闭包，通过传入不同的判断类型来返回不同的判断函数，一行代码，简洁优雅灵活（注意传入 type 参数时首字母大写）</p>
-        <p>使用 Object.prototype.toString 配合闭包，通过传入不同的判断类型来返回不同的判断函数，一行代码，简洁优雅灵活（注意传入 type 参数时首字母大写）</p>
-        <p>使用 Object.prototype.toString 配合闭包，通过传入不同的判断类型来返回不同的判断函数，一行代码，简洁优雅灵活（注意传入 type 参数时首字母大写）</p>
-        <p>使用 Object.prototype.toString 配合闭包，通过传入不同的判断类型来返回不同的判断函数，一行代码，简洁优雅灵活（注意传入 type 参数时首字母大写）</p>
-      </div>
+      <div class="markdown-body" v-html="article.content"></div>
     </div>
     <!-- /文章详情 -->
 
     <!-- 加载失败提示 -->
-    <div class="error">
+    <div v-else class="error">
       <img src="./no-network.png" alt="no-network">
       <p class="text">亲，网络不给力哦~</p>
       <van-button
@@ -67,19 +62,25 @@
         round
         size="small"
       >写评论</van-button>
+      <!-- 评论条数显示 -->
       <van-icon
         class="comment-icon"
         name="comment-o"
         info="9"
       />
+      <!-- 收藏 -->
       <van-icon
         color="orange"
-        name="star"
+        :name="article.is_collected?'star':'star-o'"
+        @click="collec"
       />
+      <!-- 点赞 -->
       <van-icon
         color="#e5645f"
-        name="good-job"
+        :name="article.attitude === 1?'good-job':'good-job-o'"
+        @click="likeArticle"
       />
+      <!-- 转发 -->
       <van-icon class="share-icon" name="share" />
     </div>
     <!-- /底部区域 -->
@@ -88,25 +89,91 @@
 </template>
 
 <script>
-import { getArticleDetails } from '@/api/article'
+import { getArticleDetails, collectArticle, deleteCollect, addLike, deleteLike } from '@/api/article'
 export default {
+  name: 'article-details',
   props: {
-    id: {
+    articleId: {
       type: String,
       required: true
     }
   },
   data () {
     return {
-      content: {}
+      article: {},
+      loading: false
     }
   },
+  created () {
+    this.articleContent()
+  },
   methods: {
-    async  articleContent () {
-      let { data } = await getArticleDetails()
-      this.content = data.data
+    // 根据文章id来获取文章详情
+    async articleContent () {
+      this.loading = true
+      try {
+        let { data } = await getArticleDetails(this.articleId)
+        this.article = data.data
+        // console.log(this.articleinfo)
+      } catch (err) {
+        console.log(err)
+      }
+      this.loading = false
+    },
+    // 收藏和取消收藏
+    async  collec () {
+      // 收藏的时候可以添加互动
+      // this.$toast.loading({
+      //   duration: 0, // 持续展示 toast
+      //   message: '操作中...',
+      //   forbidClick: true // 是否禁止背景点击
+      // })
+      if (this.article.is_collected) {
+        //  收藏状态，取消收藏
+        // console.log(this.id)
+        this.article.is_collected = false
+        await deleteCollect(this.articleId)
+        this.$toast.success('取消收藏')
+      } else {
+        // 没收藏状态，收藏
+        await collectArticle(this.articleId)
+        // 改变视图效果
+        this.article.is_collected = true
+        this.$toast.success('收藏成功')
+      }
+    },
+    // 点赞和取消点赞
+    async likeArticle () {
+      // 收藏的时候可以添加互动
+      this.$toast.loading({
+        duration: 0, // 持续展示 toast
+        message: '操作中...',
+        forbidClick: true // 是否禁止背景点击
+      })
+      try {
+        if (this.article.attitude === 1) {
+        //  收藏状态，取消收藏
+          // console.log(this.id)
+          this.article.attitude = -1
+          await deleteLike(this.articleId)
+          // 改变视图效果
+
+          console.log(this.article.attitude)
+          this.$toast.success('取消点赞')
+        } else {
+        // 没收藏状态，收藏
+          await addLike(this.articleId)
+          // 改变视图效果
+          this.article.attitude = 1
+          this.$toast.success('点赞成功')
+        }
+      } catch (err) {
+        console.log(err)
+        this.$toast.fail('操作失败')
+      }
     }
   }
+
 }
 </script>
 
