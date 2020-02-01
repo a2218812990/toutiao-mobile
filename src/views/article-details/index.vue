@@ -33,7 +33,7 @@
           />
           <div class="text">
             <p class="name">{{article.aut_name}}</p>
-            <p class="time">{{article.pubdate}}</p>
+            <p class="time">{{article.pubdate | relativeTime}}</p>
           </div>
         </div>
         <!-- //如果当前用户没有登录，或者当前登录的用户是作者本人，那么就不显示关注按钮 -->
