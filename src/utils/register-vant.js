@@ -11,7 +11,8 @@ import { Button, NavBar, Field, CellGroup, Cell,
   PullRefresh,
   Popup,
   Search,
-  Loading
+  Loading,
+  Divider
 } from 'vant'
 Vue.use(Button) // 注册
   .use(NavBar)
@@ -34,3 +35,4 @@ Vue.use(Button) // 注册
   .use(Popup)
   .use(Search)
   .use(Loading)
+  .use(Divider)

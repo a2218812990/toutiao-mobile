@@ -48,6 +48,29 @@
         </van-button>
       </div>
       <div class="markdown-body" v-html="article.content"></div>
+      <!-- 评论列表 -->
+        <div class="markdown-body content" v-html="article.content"></div>
+      <van-divider>正文结束</van-divider>
+      <!-- 文章评论 -->
+      <van-cell title="全部评论" :border="false" />
+      <van-list
+        v-model="articleComment.loading"
+        :finished="articleComment.finished"
+        finished-text="没有更多了"
+        @load="onLoad"
+      >
+        <comment-item
+          v-for="(comment, index) in articleComment.list"
+          :key="index"
+          :comment="comment"
+        />
+        <!-- <van-cell
+          v-for="(comment, index) in articleComment.list"
+          :key="index"
+          :title="comment.content"
+        /> -->
+      </van-list>
+    <!-- 评论列表 -->
     </div>
     <!-- /文章详情 -->
 
@@ -66,6 +89,7 @@
     <!-- 底部区域 -->
     <div class="footer">
       <van-button
+        @click="isPostShow = true"
         class="write-btn"
         type="default"
         round
@@ -75,7 +99,7 @@
       <van-icon
         class="comment-icon"
         name="comment-o"
-        info="9"
+        :info="articleComment.totalCount"
       />
       <!-- 收藏 -->
       <van-icon
@@ -93,6 +117,26 @@
       <van-icon class="share-icon" name="share" />
     </div>
     <!-- /底部区域 -->
+    <!-- 发布文章品论 -->
+      <van-popup
+      v-model="isPostShow"
+      position="bottom"
+    >
+      <div class="post-comment">
+        <van-field
+          class="post-field"
+          v-model="postMessage"
+          rows="2"
+          autosize
+          type="textarea"
+          maxlength="50"
+          placeholder="请输入留言"
+          show-word-limit
+        />
+        <van-button size="small" type="primary" @click="onAddComment" :disabled="!postMessage">发布</van-button>
+      </div>
+    </van-popup>
+    <!-- 发布文章品论 -->
 </div>
 
 </template>
@@ -100,8 +144,11 @@
 <script>
 import { getArticleDetails, collectArticle, deleteCollect, addLike, deleteLike } from '@/api/article'
 import { addFocus, deleteFocus } from '@/api/user'
+import { getComments, addComment } from '@/api/comment'
+import CommentItem from '../../components/comment-item'
 export default {
   name: 'article-details',
+  components: { CommentItem },
   props: {
     articleId: {
       type: String,
@@ -111,7 +158,16 @@ export default {
   data () {
     return {
       article: {},
-      loading: false
+      loading: false,
+      articleComment: {
+        list: [],
+        loading: false,
+        finished: false,
+        offset: null, // 请求下一页数据的页码
+        totalCount: 0 // 总数据条数
+      },
+      isPostShow: false, // 发布评论的显示
+      postMessage: '' // 发布评论输入内容
     }
   },
   created () {
@@ -197,6 +253,59 @@ export default {
       } catch (err) {
         console.log(err)
         this.$toast.fail('操作失败')
+      }
+    },
+    // 评论列表数据的获取
+    async onLoad () {
+      const articleComment = this.articleComment
+      // 1. 请求获取数据
+      const { data } = await getComments({
+        type: 'a', // 评论类型，a-对文章(article)的评论，c-对评论(comment)的回复
+        source: this.articleId, // 源id，文章id或评论id
+        offset: articleComment.offset, // 获取评论数据的偏移量，值为评论id，表示从此id的数据向后取，不传表示从第一页开始读取数据
+        limit: 10 // 每页大小
+      })
+      // 2. 将数据添加到列表中
+      const { results } = data.data
+      articleComment.list.push(...results)
+      // 更新总数据条数
+      articleComment.totalCount = data.data.total_count
+      // 3. 将加载更多的 loading 设置为 false
+      articleComment.loading = false
+      // 4. 判断是否还有数据
+      if (results.length) {
+        articleComment.offset = data.data.last_id // 更新获取下一页数据的页码
+      } else {
+        articleComment.finished = true // 没有数据了，关闭加载更多
+      }
+    },
+    // 发布品论
+    async onAddComment () {
+      const postMessage = this.postMessage
+      if (!postMessage) {
+        return
+      }
+      this.$toast.loading({
+        duration: 0,
+        message: '发布中...',
+        forbidClick: true // 是否禁止背景点击
+      })
+      try {
+        let{ data } = await addComment({
+          target: this.articleId, // 评论的目标id（评论文章即为文章id，对评论进行回复则为评论id）
+          content: postMessage })
+        // 关闭发布弹层
+        this.isPostShow = false
+        // 更新视图，发布的品论到最顶部
+        this.articleComment.list.unshift(data.data.new_obj)
+        // 评论数量显示增加
+        this.articleComment.totalCount++
+        // 最后清空文本框
+        this.postMessage = ''
+        this.$toast.success('发布成功')
+      } catch (err) {
+        console.log(err)
+        this.$toast.fail('发布失败')
       }
     }
   }
@@ -284,6 +393,15 @@ export default {
     }
     .share-icon {
       bottom: -2px;
+    }
+  }
+    .post-comment {
+    display: flex;
+    align-items: flex-end;
+    padding: 10px;
+    .post-field {
+      background: #f5f7f9;
+      margin-right: 15px;
     }
   }
 }

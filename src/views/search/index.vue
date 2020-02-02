@@ -22,6 +22,7 @@
   @load="onLoad"
  >
   <van-cell
+   @click="$router.push()"
     v-for="item in list"
     :key="item.id"
     :title="item.title"
