@@ -63,6 +63,7 @@
           v-for="(comment, index) in articleComment.list"
           :key="index"
           :comment="comment"
+          @click-reply='onReplyShow'
         />
         <!-- <van-cell
           v-for="(comment, index) in articleComment.list"
@@ -137,6 +138,19 @@
       </div>
     </van-popup>
     <!-- 发布文章品论 -->
+    <!-- 评论回复 -->
+       <van-popup
+      v-model="isReplyShow"
+      position="bottom"
+      style="height: 95%"
+    >
+   <comment-reply
+        v-if="isReplyShow"
+        @click-close="isReplyShow = false"
+        :comment="currentComment"
+      />
+    </van-popup>
+    <!-- 评论回复 -->
 </div>
 
 </template>
@@ -146,9 +160,10 @@ import { getArticleDetails, collectArticle, deleteCollect, addLike, deleteLike }
 import { addFocus, deleteFocus } from '@/api/user'
 import { getComments, addComment } from '@/api/comment'
 import CommentItem from '../../components/comment-item'
+import CommentReply from '../../components/comment-reply'
 export default {
   name: 'article-details',
-  components: { CommentItem },
+  components: { CommentItem, CommentReply },
   props: {
     articleId: {
       type: String,
@@ -167,7 +182,9 @@ export default {
         totalCount: 0 // 总数据条数
       },
       isPostShow: false, // 发布评论的显示
-      postMessage: '' // 发布评论输入内容
+      postMessage: '', // 发布评论输入内容
+      isReplyShow: false,
+      currentComment: {} // 点击品论回复的那个对象
     }
   },
   created () {
@@ -307,6 +324,11 @@ export default {
         console.log(err)
         this.$toast.fail('发布失败')
       }
+    },
+    async onReplyShow (comment) {
+      // 将子组件中传给我评论对象存储到当前组件
+      this.currentComment = comment
+      this.isReplyShow = true
     }
   }
 
