@@ -39,6 +39,7 @@
         type="default"
         round
         size="small"
+        @click="isPostShow = true"
       >写评论</van-button>
       <van-icon
         color="#e5645f"
@@ -46,20 +47,41 @@
       />
     </div>
     <!-- /底部 -->
+    <!-- 发布回复 -->
+    <van-popup
+      v-model="isPostShow"
+      position="bottom"
+    >
+      <!--
+        value
+        input
+       -->
+      <post-comment
+        v-model="postMessage"
+        @click-post="onPost"
+      />
+    </van-popup>
+    <!-- /发布回复 -->
   </div>
 </template>
 
 <script>
 import CommentItem from './comment-item'
-import { getComments } from '@/api/comment'
+import { getComments, addComment } from '@/api/comment'
+import PostComment from '../components/post-comment'
 export default {
   name: 'CommentReply',
   components: {
-    CommentItem
+    CommentItem,
+    PostComment
   },
   props: {
     comment: {
       type: Object,
+      required: true
+    },
+    articleId: {
+      type: [Object, Number, String],
       required: true
     }
   },
@@ -69,7 +91,9 @@ export default {
       loading: false,
       finished: false,
       offset: null,
-      limit: 20
+      limit: 20,
+      isPostShow: false, // 发布回复的显示状态
+      postMessage: ''
     }
   },
   computed: {},
@@ -93,6 +117,36 @@ export default {
         this.offset = data.data.last_id
       } else {
         this.finished = true
+      }
+    },
+    async onPost () {
+      let postMessage = this.postMessage
+      if (!postMessage) {
+        return
+      }
+      this.$toast({
+        duration: 0, // 持续展示 toast
+        message: '发布中...',
+        forbidClick: true // 是否禁止背景点击
+      })
+      try {
+        const { data } = await addComment({
+          target: this.comment.com_id.toString(), // 评论的目标id（评论文章即为文章id，对评论进行回复则为评论id）
+          content: postMessage, // 评论内容
+          art_id: this.articleId.toString()
+        })
+        // 关闭发布评论的弹层
+        this.isPostShow = false
+        // 将最新发布的评论展示到列表的顶部
+        this.list.unshift(data.data.new_obj)
+        // 更新文章评论的回复总数量
+        this.comment.reply_count++
+        // 清空文本框
+        this.postMessage = ''
+        this.$toast.success('发布成功')
+      } catch (err) {
+        console.log(err)
+        this.$toast.fail('发布失败')
       }
     }
   }

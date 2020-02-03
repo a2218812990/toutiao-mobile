@@ -145,6 +145,7 @@
       style="height: 95%"
     >
    <comment-reply
+        :article-id="articleId"
         v-if="isReplyShow"
         @click-close="isReplyShow = false"
         :comment="currentComment"
