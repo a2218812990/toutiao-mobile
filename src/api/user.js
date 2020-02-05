@@ -15,3 +15,5 @@ export const addFocus = id => request({ url: '/app/v1_0/user/followings', data: 
 export const deleteFocus = id => request({ url: `/app/v1_0/user/followings/${id}`, method: 'DELETE' })
 // 获取用户个人资料
 export const getUserProfile = data => request({ url: '/app/v1_0/user/profile', data, method: 'GET' })
+// 编辑用户个人资料
+export const editUserProfile = data => request({ url: '/app/v1_0/user/profile', data, method: 'PATCH' })
