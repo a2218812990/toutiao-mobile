@@ -14,7 +14,8 @@ const routes = [
       { path: 'my', component: () => import('@/views/my') }]
   },
   { path: '/search', component: () => import('@/views/search') },
-  { path: '/article/:articleId', component: () => import('@/views/article-details'), props: true }// 将动态参数隐射到页面上
+  { path: '/article/:articleId', component: () => import('@/views/article-details'), props: true }, // 将动态参数隐射到页面上
+  { path: '/user/profile', component: () => import('@/views/user-profile') }
 ]
 
 const router = new VueRouter({

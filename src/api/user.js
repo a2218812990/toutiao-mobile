@@ -13,3 +13,5 @@ export const getChannels = data => request({ url: '/app/v1_0/user/channels', dat
 export const addFocus = id => request({ url: '/app/v1_0/user/followings', data: { target: id }, method: 'POST' })
 // 取消关注
 export const deleteFocus = id => request({ url: `/app/v1_0/user/followings/${id}`, method: 'DELETE' })
+// 获取用户个人资料
+export const getUserProfile = data => request({ url: '/app/v1_0/user/profile', data, method: 'GET' })
